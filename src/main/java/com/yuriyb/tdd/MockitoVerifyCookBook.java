@@ -4,6 +4,9 @@ import java.util.AbstractList;
 import java.util.List;
 
 import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
+
 import static org.mockito.Mockito.*;
 
 public class MockitoVerifyCookBook {
@@ -41,6 +44,51 @@ public class MockitoVerifyCookBook {
 		mockedList.clear();
 		verify(mockedList).size();
 		//verifyNoMoreInteractions(mockedList);
+	}
+	
+	@Test
+	public void verifyInteractionOrder(){
+		List<String> mockedList = mock(MyList.class);
+		mockedList.size();
+		mockedList.add("x");
+		mockedList.clear();
+		
+		InOrder inOrder = Mockito.inOrder(mockedList);
+		inOrder.verify(mockedList).size();
+		inOrder.verify(mockedList).add("x");
+		inOrder.verify(mockedList).clear();
+	}
+	
+	@Test
+	public void verifyInteractionHasNotOccrred(){
+		List<String> mockedList = mock(MyList.class);
+		mockedList.size();
+		verify(mockedList, never()).clear();
+	}
+	
+	@Test
+	public void verifyInteractionHasOccuredAtLeastCertainNumberTimes(){
+		List<String> mockedList = mock(MyList.class);
+		mockedList.clear();
+		mockedList.clear();
+		mockedList.clear();
+		
+		verify(mockedList, atLeast(1)).clear();
+		verify(mockedList, atMost(10)).clear();
+	}
+	
+	@Test
+	public void verifyInteractionWithExactArgument(){
+		List<String> mockedList = mock(MyList.class);
+		mockedList.add("test");
+		verify(mockedList).add("test");
+	}
+	
+	@Test
+	public void verifyInteractionWithAnyStringArgument(){
+		List<String> mockedList = mock(MyList.class);
+		mockedList.add("test");
+		verify(mockedList).add(anyString());
 	}
 }
 
